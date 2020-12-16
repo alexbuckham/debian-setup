@@ -1,0 +1,35 @@
+---
+- name: Restart NetworkManager
+  service: name=network-manager state=restarted
+  become: true
+
+- name: Restart sshd
+  service: name=sshd state=restarted
+  become: true
+
+- name: Restart dnsmasq
+  service: name=dnsmasq state=restarted
+  become: true
+
+- name: Update resolvconf
+  shell: resolvconf -u
+  become: true
+
+- name: Update APT
+  shell: apt update
+  become: true
+
+- name: Update dconf
+  shell: dconf update
+  become: true
+
+- name: Update initramfs
+  shell: update-initramfs -u
+  become: true
+
+- name: Install fetchfox stable
+  shell: fetchfox stable
+
+- name: Reload nftables
+  service: name=nftables state=reloaded
+  become: true

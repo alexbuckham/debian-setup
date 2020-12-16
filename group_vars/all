@@ -1,0 +1,10 @@
+host_username: 'alexbuckham'
+
+git_email: 'alexbuckham@me.com'
+git_name: 'Alex Buckham'
+git_signing_key: ''
+git_commit_gpgsign: 'false'
+git_diff_tool: 'meld'
+git_push_default: 'current'
+
+authorized_keys: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnqLAIWIcf7rCQqaz3PzJhqK0AVn5DVgAH7e7bkbxTQJZw3ufExR5/Q4lvjumEwZvZ4HadzdI1315Suf7BxzmPwx/jiE/DP+6ZfIByYZT88yFJvpPzZYlzNVbq29r1NAvxonvUAfBjIpA2Ag20eVQ3zExaPDFvDd+u8ipmJb3hyQCJjHzd0folqd6oPcauGFq3lofvKBtqFa9F7WyzGvnggAay8LPhI0MUiYISNlpAOim7cSUGPOp1CnBddIB738jG5aPg3Yb0oZZ+DAwt1tl2vEijbkSZlPjeZpI5NUmygJulZGQFup5xqO7raRFyqVO1hrmvGMSJJe7xSWY20juB alexbuckham@Alexs-MacBookPro-Retina.local'

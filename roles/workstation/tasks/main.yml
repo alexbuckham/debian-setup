@@ -1,0 +1,299 @@
+---
+# Flush handlers for previous task.
+- meta: flush_handlers
+
+# Make sure relevant system and desktop support packages are installed.
+- name: Ensure system packages
+  apt: 
+    state: latest
+    name:
+      - gpg
+      - gnome-color-manager
+      - gnome-tweaks
+      - gnome-menus
+      - gnome-shell-extensions
+      - libcanberra-gtk-module
+      - arc-theme
+      - adapta-gtk-theme
+      - openssh-server
+      - openssh-client
+      - file-roller
+      - resolvconf
+      - dnsmasq
+      - dnsutils
+      - curl
+      - wget
+      - gnupg
+      - apt-transport-https
+      - git
+      - git-extras
+      - whois
+      - traceroute
+      - htop
+      - zip
+      - unzip
+      - p7zip
+      - zsh
+      - hexedit
+      - debsums
+      - debsecan
+      - libpam-tmpdir
+      - flatpak
+      - gnome-software-plugin-flatpak
+      - terminator
+      - snapd
+      - network-manager 
+      - libnss3-tools 
+      - jq 
+      - xsel
+      - nginx
+  become: true
+
+# Ensure relevant APT keys are present on the system to support extra repositories added later.
+- name: Add apt keys
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: '{{item}}'
+  loop:
+    - '72ECF46A56B4AD39C907BBB71646B01B86E50310' # Yarn
+    - 'E58A9D36647CAE7F' # Papirus
+    - '7568D9BB55FF9E5287D586017AE645C0CF8E292A'
+  become: true
+
+- name: Add an Apt signing key, uses whichever key is at the URL
+  apt_key:
+    url: '{{item}}'
+    state: present
+  become: true
+  with_items:
+    - https://insomnia.rest/keys/debian-public.key.asc
+    - https://bintray.com/user/downloadSubjectPublicKey?username=bintray
+    - https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    - https://baltocdn.com/helm/signing.asc
+    - http://deb.tableplus.com/apt.tableplus.com.gpg.key
+    - https://download.docker.com/linux/ubuntu/gpg
+    - https://apt.releases.hashicorp.com/gpg
+    - https://mariadb.org/mariadb_release_signing_key.asc
+    - https://dl.yarnpkg.com/debian/pubkey.gpg 
+
+# Enable extra repositories needed on the system. Mostly development, productivity etc.
+- name: Enable extra repos
+  apt_repository: filename='{{item.file}}' repo='{{item.repo}}' state=present
+  loop:
+    - {file: 'yarn', repo: 'deb https://dl.yarnpkg.com/debian/ stable main'}
+    - {file: 'insomnia', repo: 'deb https://dl.bintray.com/getinsomnia/Insomnia /'}
+    - {file: 'tableplus', repo: 'deb [arch=amd64] https://deb.tableplus.com/debian tableplus main'}
+    - {file: 'papirus', repo: 'ppa:papirus/papirus'}
+    - {file: 'php', repo: 'ppa:ondrej/php'}
+    - {file: 'appimagelauncher', repo: 'ppa:appimagelauncher-team/stable'}
+    - {file: 'kubernetes', repo: 'deb https://apt.kubernetes.io/ kubernetes-xenial main'}
+    - {file: 'helm', repo: 'deb https://baltocdn.com/helm/stable/debian/ all main'}
+    - {file: 'ulauncher', repo: 'ppa:agornostal/ulauncher'}
+    - {file: 'docker', repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'}
+    - {file: 'pritunl', repo: 'deb https://repo.pritunl.com/stable/apt focal main'}
+    - {file: 'terraform', repo: 'deb https://apt.releases.hashicorp.com focal main'}
+    - {file: 'mariadb', repo: 'deb [arch=amd64] https://mariadb.mirror.digitalpacific.com.au/repo/10.5/ubuntu groovy main'}
+    - {file: 'yarn', repo: 'deb https://dl.yarnpkg.com/debian/ stable main'}
+  become: true
+
+- name: Ensure my packages
+  apt: 
+    state: latest
+    update_cache: yes
+    name:
+      - make
+      - ubuntu-gnome-desktop
+      - papirus-icon-theme
+      - cmake
+      - openvpn
+      - meld
+      - python3
+      - python3-pip
+      - nodejs
+      - yarn
+      # PHP 7.4
+      - php7.4-cli
+      - php7.4-mbstring
+      - php7.4-mysql
+      - php7.4-memcached
+      - php7.4-curl
+      - php7.4-iconv
+      - php7.4-intl
+      - php7.4-json
+      - php7.4-pdo
+      - php7.4-xml
+      - php7.4-apcu
+      - php7.4-fpm
+      - php7.4-gd
+      - php7.4-zip
+      - php7.4-sqlite3
+      - php7.4-imagick
+      - sqlite3
+      - inotify-tools
+      - filezilla
+      - vlc
+      - libcurl4-gnutls-dev
+      - libarchive-dev
+      - libssh-dev
+      - libgit2-dev
+      - dconf-editor
+      - gnome-shell-extensions
+      - gnome-shell-extension-system-monitor
+      - gnome-tweaks
+      - python3-psutil
+      - insomnia
+      - kubectl
+      - helm
+      - tableplus
+      - ulauncher
+      - docker-ce 
+      - docker-ce-cli 
+      - containerd.io
+      - terraform
+      - pritunl-client-electron
+      - mariadb-server
+      - mariadb-client
+      - appimagelauncher
+      - neofetch
+  become: true
+
+- name: install deb files
+  apt: deb={{item}} state=present
+  with_items:
+    - https://discordapp.com/api/download?platform=linux&format=deb
+    - https://downloads.slack-edge.com/linux_releases/slack-desktop-4.11.1-amd64.deb
+    - https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - https://synapse-electron.s3-ap-southeast-2.amazonaws.com/synapse-electron_0.2.11_amd64.deb
+  become: true
+
+- name: Ensure system files
+  copy: src='{{item.src}}'  dest='{{item.dest}}' mode='0644' owner='root' group='root'
+  loop:
+    - {src: menu-icon.svg, dest: /etc/menu-icon.svg} # Used by Arc Menu GNOME extension.
+    - {src: wallpaper.png, dest: /etc/wallpaper.png} # System default wallpaper
+    - {src: issue, dest: /etc/issue} # System banner
+    - {src: issue.net, dest: /etc/issue.net} # System banner - for network clients
+    - {src: motd, dest: /etc/motd} # User motd
+  become: true
+
+- name: Install oh-my-zsh for self
+  git: repo='https://github.com/ohmyzsh/ohmyzsh' dest='/home/{{host_username}}/.oh-my-zsh'
+
+- name: oh-my-zsh plugins
+  git: repo='{{item.repo}}' dest='/home/{{host_username}}/.oh-my-zsh/plugins/{{item.name}}'
+  loop:
+    - {repo: 'https://github.com/zsh-users/zsh-autosuggestions', name: 'zsh-autosuggestions'}
+    - {repo: 'https://github.com/zsh-users/zsh-syntax-highlighting', name: 'zsh-syntax-highlighting'}
+
+- name: Install powerlevel10k for self
+  git: repo='https://github.com/romkatv/powerlevel10k.git' dest='/home/{{host_username}}/.oh-my-zsh/themes/powerlevel10k'
+
+- name: Install fonts
+  copy: src=fonts/ dest=/usr/local/share/fonts
+  become: true
+
+- name: Ensure group "docker" exists
+  group:
+    name: docker
+    state: present
+  become: true
+
+# Ensure own user settings
+- name: Update own user
+  user:
+    name: '{{host_username}}'
+    shell: /bin/zsh
+    groups: docker
+    append: yes
+    create_home: yes
+    password: '*' # Initial password is none, account locked
+    update_password: on_create # Do not reset password from ansible
+  become: true
+
+- name: Ensure home directory has correct permissions
+  file: path='/home/{{host_username}}/' state=directory mode='0700' owner='{{host_username}}' group='{{host_username}}'
+  become: true
+
+- name: Create ~/.ssh/
+  file: path='/home/{{host_username}}/.ssh' state=directory mode='0700' owner='{{host_username}}' group='{{host_username}}'
+  become: true
+
+- name: create needed directories
+  file: 
+    owner: '{{host_username}}' 
+    group: '{{host_username}}'
+    path: '/home/{{host_username}}/{{item}}'
+    state: directory 
+    recurse: true
+  with_items:
+    - .config/terminator
+
+- name: Ensure personal dot files
+  copy: src='{{item.src}}'  dest='{{item.dest}}' mode='0600' owner='{{host_username}}' group='{{host_username}}'
+  loop:
+    - {src: dots/zshrc.zsh, dest: '/home/{{host_username}}/.zshrc'}
+    - {src: dots/editorconfig, dest: '/home/{{host_username}}/.editorconfig'}
+    - {src: dots/wgetrc, dest: '/home/{{host_username}}/.wgetrc'}
+    - {src: dots/gitignore, dest: '/home/{{host_username}}/.gitignore'}
+    - {src: dots/curlrc, dest: '/home/{{host_username}}/.curlrc'}
+    - {src: dots/p10k, dest: '/home/{{host_username}}/.p10k.zsh'}
+    - {src: terminator, dest: '/home/{{host_username}}/.config/terminator/config'}
+    - {src: dconf.ini, dest: '/home/{{host_username}}/'}
+
+- name: import dconf
+  shell: cat '/home/{{host_username}}/dconf.ini' | dconf load /
+
+- name: Ensure personal files (from templates)
+  template: src='{{item.src}}'  dest='{{item.dest}}' mode='0600' owner='{{host_username}}' group='{{host_username}}'
+  loop:
+    - {src: dots/gitconfig, dest: '/home/{{host_username}}/.gitconfig'}
+
+- name: Ensure default directories in home
+  file: path='{{item}}' state=directory mode='0700' owner='{{host_username}}' group='{{host_username}}'
+  loop:
+    - '/home/{{host_username}}/dots'
+  become: true
+
+# Install python extra packages and ensure they are up to date.
+- name: Ensure pip3 packages
+  pip: name='{{item}}' executable=pip3 state=latest
+  with_items:
+    - ansible 
+    - pipenv
+    - docker-compose
+    - awscli
+  become: true
+
+- name: Install Node global packages (yarn)
+  yarn: name='{{item}}' global=yes state=latest production=yes
+  loop:
+    - '@vue/cli'
+  changed_when: false # ignore
+  become: true
+
+
+- name: Add the flathub flatpak repository remote
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+- name: Install flatpak apps
+  become: true
+  flatpak:
+    name: '{{item}}'
+  with_items:
+    - com.spotify.Client
+    - com.axosoft.GitKraken
+    - org.onlyoffice.desktopeditors
+
+- name: Install snap apps
+  become: true
+  snap:
+    classic: true
+    name: 
+      - kontena-lens
+      - mailspring
+      - screencloud
+      - beekeeper-studio

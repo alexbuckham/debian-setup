@@ -1,0 +1,25 @@
+---
+- hosts: workstations
+  roles:
+    - role: workstation
+    - role: jaredhocutt.gnome_extensions
+    - {role: geerlingguy.composer, become: true}
+    - {role: geerlingguy.nodejs, become: true}
+  vars:
+    gnome_extension_ids:
+      - 964
+      - 770
+      - 1160
+      - 120
+      - 104
+      - 1465
+      - 3628
+    composer_global_packages: [
+      {name: 'laravel/installer'},
+      {name: 'cpriego/valet-linux'},
+      {name: 'squizlabs/php_codesniffer'}
+    ]
+    composer_home_path: '/home/alexbuckham/.composer'
+    composer_home_owner: "{{host_username}}"
+    composer_home_group: "{{host_username}}"
+    nodejs_install_npm_user: "{{ host_username }}"
