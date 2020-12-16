@@ -85,7 +85,6 @@
     - {file: 'tableplus', repo: 'deb [arch=amd64] https://deb.tableplus.com/debian tableplus main'}
     - {file: 'papirus', repo: 'ppa:papirus/papirus'}
     - {file: 'php', repo: 'ppa:ondrej/php'}
-    - {file: 'appimagelauncher', repo: 'ppa:appimagelauncher-team/stable'}
     - {file: 'kubernetes', repo: 'deb https://apt.kubernetes.io/ kubernetes-xenial main'}
     - {file: 'helm', repo: 'deb https://baltocdn.com/helm/stable/debian/ all main'}
     - {file: 'ulauncher', repo: 'ppa:agornostal/ulauncher'}
@@ -151,8 +150,6 @@
       - containerd.io
       - terraform
       - pritunl-client-electron
-      - mariadb-server
-      - mariadb-client
       - appimagelauncher
       - neofetch
   become: true
